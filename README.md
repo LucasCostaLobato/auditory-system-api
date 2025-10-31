@@ -20,3 +20,15 @@ source <venv_name>/bin/activate
 ```
 pip install -r install/requirements.txt
 ```
+
+## Fast test
+
+1. After setup the environment, run the API
+```
+make run
+```
+
+2. Then, open your browser and type
+```
+http://127.0.0.1:8000/outer-ear/space-domain-analysis?ec_length=0.03&fi=100&ff=1000&nf=100&freqs_of_analysis=100&me_severity=low
+```

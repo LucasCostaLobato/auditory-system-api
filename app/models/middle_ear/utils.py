@@ -13,7 +13,7 @@ def get_middle_ear_parameters(reference_parameter: str) -> dict:
     For details, see https://doi.org/10.55753/aev.v35e52.34"""
 
     parameters = np.loadtxt(
-        f"middle_ear/parameters/{reference_parameter}.txt", delimiter=" "
+        f"app/models/middle_ear/parameters/{reference_parameter}.txt", delimiter=" "
     )
 
     return {

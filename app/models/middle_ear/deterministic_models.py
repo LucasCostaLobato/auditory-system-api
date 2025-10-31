@@ -42,7 +42,7 @@ def get_stiffness_matrix(
     return np.matrix([l1, l2, l3, l4])
 
 
-def get_middle_ear_model(x: list, freq: list, condition: str = "healthy", severity: str = "low") -> dict:
+def get_middle_ear_model(x: dict, freq: list, condition: str = "healthy", severity: str = "low") -> dict:
     """This function computes the modal solution of the deterministic model
     of the human middle ear, being:
     
@@ -58,6 +58,7 @@ def get_middle_ear_model(x: list, freq: list, condition: str = "healthy", severi
     if condition == "healthy":
         k7 = x["k7"]
         k3 = x["k3"]
+
     if condition == "otosclerosis":
         k3 = x["k3"]
 
@@ -67,6 +68,7 @@ def get_middle_ear_model(x: list, freq: list, condition: str = "healthy", severi
             k7 = x["k7"]*100
         if severity == "high":
             k7 = x["k7"]*1000
+
     if condition == "malFixation":
         k7 = x["k7"]
 
