@@ -30,5 +30,14 @@ make run
 
 2. Then, open your browser and type
 ```
-http://127.0.0.1:8000/outer-ear/space-domain-analysis?ec_length=0.03&fi=100&ff=1000&nf=100&freqs_of_analysis=100&me_severity=low
+http://127.0.0.1:8000/outer-ear/space-domain-analysis?ec_length=0.03&fi=100&ff=1000&nf=100&frequencies=100&frequencies=200&me_severity=low
+```
+or
+
+```
+http://127.0.0.1:8000/outer-ear/frequency-domain-analysis?ec_length=0.03&fi=100&ff=1000&nf=100&positions=0.005&positions=0.02&me_severity=low
+```
+
+```
+http://127.0.0.1:8000/outer-ear/frf?ec_length=0.03&fi=4000&ff=7000&nf=100&input_position=0.01&output_position=0.025&me_severity=low
 ```
