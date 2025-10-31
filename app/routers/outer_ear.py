@@ -2,40 +2,9 @@ from fastapi import APIRouter, HTTPException, Query
 import numpy as np
 from typing import List, Optional
 
-from app.models.outer_ear.deterministic_model import eac_canal_acoustic_field
-from app.models.middle_ear.deterministic_models import get_middle_ear_model
-from app.models.middle_ear.utils import get_middle_ear_parameters
+from app.models.outer_ear.deterministic_model import get_eac_canal_acoustic_field
 
 router = APIRouter(prefix="/outer-ear", tags=["outerear"])
-
-
-def get_eac_canal_acoustic_field(
-    ec_length: float,
-    fi: float,
-    ff: float,
-    nf: int,
-    me_condition: Optional[str] = "healthy",
-    me_severity: Optional[str] = "low",
-):
-
-    if me_condition is None:
-        me_condition = "healthy"
-    if me_severity is None:
-        me_severity = "low"
-
-    freq_vec = np.linspace(fi, ff, nf)
-
-    me_param = get_middle_ear_parameters("LVATB1")
-
-    middle_ear_model = get_middle_ear_model(
-        me_param, freq_vec, me_condition, me_severity
-    )
-
-    pressure, _, x_vec = eac_canal_acoustic_field(
-        ec_length, me_param["tmArea"], freq_vec, middle_ear_model["Zme"]
-    )
-
-    return pressure, x_vec, freq_vec
 
 
 @router.get("/space-domain-analysis")

@@ -1,6 +1,10 @@
 import numpy as np
+from typing import List, Optional
 
-def eac_canal_acoustic_field(
+from app.models.middle_ear.deterministic_models import get_middle_ear_model
+from app.models.middle_ear.utils import get_middle_ear_parameters
+
+def analytical_ear_canal_model(
     L: float,
     A: float,
     freq_vec: np.array,
@@ -46,3 +50,33 @@ def eac_canal_acoustic_field(
             velocity[ind_f,ind_x] = (AA - BB)/(rho0*c0)
     
     return pressure, velocity, x_vec
+
+
+def get_eac_canal_acoustic_field(
+    ec_length: float,
+    fi: float,
+    ff: float,
+    nf: int,
+    me_condition: Optional[str] = "healthy",
+    me_severity: Optional[str] = "low",
+):
+
+    if me_condition is None:
+        me_condition = "healthy"
+    if me_severity is None:
+        me_severity = "low"
+
+    freq_vec = np.linspace(fi, ff, nf)
+
+    me_param = get_middle_ear_parameters("LVATB1")
+
+    middle_ear_model = get_middle_ear_model(
+        me_param, freq_vec, me_condition, me_severity
+    )
+
+    pressure, _, x_vec = analytical_ear_canal_model(
+        ec_length, me_param["tmArea"], freq_vec, middle_ear_model["Zme"]
+    )
+
+    return pressure, x_vec, freq_vec
+
