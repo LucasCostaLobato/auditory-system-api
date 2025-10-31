@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import outer_ear
+from app.routers import outer_ear, middle_ear
 
 # Cria a instância principal da API
 app = FastAPI(
@@ -10,3 +10,4 @@ app = FastAPI(
 
 # Registra os módulos de rotas
 app.include_router(outer_ear.router)
+app.include_router(middle_ear.router)

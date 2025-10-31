@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Optional
 
-from app.models.middle_ear.deterministic_models import get_middle_ear_model
+from app.models.middle_ear.deterministic_models import lumped_element_middle_ear_model
 from app.models.middle_ear.utils import get_middle_ear_parameters
 
 def analytical_ear_canal_model(
@@ -70,7 +70,7 @@ def get_eac_canal_acoustic_field(
 
     me_param = get_middle_ear_parameters("LVATB1")
 
-    middle_ear_model = get_middle_ear_model(
+    middle_ear_model = lumped_element_middle_ear_model(
         me_param, freq_vec, me_condition, me_severity
     )
 

@@ -38,7 +38,6 @@ async def get_outer_ear_space_domain_analysis(
 
     return output
 
-
 @router.get("/frequency-domain-analysis")
 async def get_outer_ear_space_domain_analysis(
     ec_length: float,

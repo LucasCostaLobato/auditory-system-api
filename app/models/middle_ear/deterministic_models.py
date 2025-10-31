@@ -1,7 +1,9 @@
 """This module comprises the methods for modeling the human middle ear with deterministic approach"""
 import numpy as np
 from scipy.linalg import eigh
+from typing import List, Optional
 
+from app.models.middle_ear.utils import get_middle_ear_parameters
 
 def get_mass_matrix(m1: float, m2: float, m3: float, m4: float) -> np.array:
     """This funtion returns the mass matrix of the lumped-element 
@@ -42,7 +44,7 @@ def get_stiffness_matrix(
     return np.matrix([l1, l2, l3, l4])
 
 
-def get_middle_ear_model(x: dict, freq: list, condition: str = "healthy", severity: str = "low") -> dict:
+def lumped_element_middle_ear_model(x: dict, freq: list, condition: str = "healthy", severity: str = "low") -> dict:
     """This function computes the modal solution of the deterministic model
     of the human middle ear, being:
     
@@ -140,3 +142,24 @@ def get_middle_ear_model(x: dict, freq: list, condition: str = "healthy", severi
         "Cm": np.matrix(Cm),
         "Eigvec": np.matrix(eigvec)
     }
+
+
+def get_middle_ear_model(
+    fi: float,
+    ff: float,
+    nf: int,
+    me_condition: Optional[str] = "healthy",
+    me_severity: Optional[str] = "low"):
+
+    if me_condition is None:
+        me_condition = "healthy"
+    if me_severity is None:
+        me_severity = "low"
+
+    freq_vec = np.linspace(fi, ff, nf)
+
+    me_param = get_middle_ear_parameters("LVATB1")
+
+    me_model = lumped_element_middle_ear_model(me_param,freq_vec,me_condition,me_severity)
+
+    return freq_vec, me_model
