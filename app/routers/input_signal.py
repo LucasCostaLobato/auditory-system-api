@@ -12,7 +12,7 @@ async def get_input_signal_magnitude_spectrum(
     fi: float,
     ff: float,
     nf: int,
-    inputSignal: Optional[str] = "idealWhiteNoise",
+    inputSignal: str,
     level: Optional[bool] = True,
 ):
     
