@@ -12,18 +12,18 @@ async def get_input_signal_magnitude_spectrum(
     fi: float,
     ff: float,
     nf: int,
-    inputSignal: Optional[str] = "idealWhiteNoise",
+    inputSignal: str,
     level: Optional[bool] = True,
 ):
     
     p_ref = 20*10**(-6) # reference pressure
 
-    freq_vec, ideal_white_noise = input_signal_selector[inputSignal](fi,ff,nf)
+    freq_vec, input_signal = input_signal_selector[inputSignal](fi,ff,nf)
 
     if level:
-        amplitude = 20*np.log10(np.abs(ideal_white_noise)/p_ref)
+        amplitude = 20*np.log10(np.abs(input_signal)/p_ref)
     else:
-        amplitude = ideal_white_noise
+        amplitude = np.abs(input_signal)
 
     output = {"freq_vec": freq_vec.tolist(), "magnitude": amplitude.tolist()}
 

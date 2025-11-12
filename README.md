@@ -49,5 +49,10 @@ http://127.0.0.1:8000/middle-ear/frf?fi=4000&ff=7000&nf=2&measures=Hfp&measures=
 or
 
 ```
-http://127.0.0.1:8000/input-signal/magnitude-spectrum?fi=4000&ff=7000&nf=2&signal=idealWhiteNoise
+http://127.0.0.1:8000/input-signal/magnitude-spectrum?fi=4000&ff=7000&nf=2&inputSignal=idealWhiteNoise
+```
+
+
+```
+http://127.0.0.1:8000/input-signal/magnitude-spectrum?fi=4000&ff=7000&nf=2&inputSignal=speech
 ```
