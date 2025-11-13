@@ -35,6 +35,19 @@ def get_speech_signal(fi: float, ff: float, nf: int):
     return freq_vec, speech_signal
 
 
+
+def get_clarinet_signal(fi: float, ff: float, nf: int):
+
+    freq_vec = np.linspace(fi, ff, nf)
+
+    with open('app/database/clarinet_signal.json', 'r') as file:
+        data = json.load(file)
+
+    clarinet_signal = np.interp(freq_vec, data["freq"], data["data"])
+
+    return freq_vec, clarinet_signal
+
+
 def get_narrow_band_signal_low_freq(fi: float, ff: float, nf: int):
 
     freq_vec = np.linspace(fi, ff, nf)
@@ -48,11 +61,13 @@ def get_narrow_band_signal_low_freq(fi: float, ff: float, nf: int):
     sos = signal.butter(10, [80,120], "bandpass", fs=sampling_rate, output="sos")
     filter_sweep = signal.sosfilt(sos, sweep)
 
-    spectrum, freq_vec = get_fft(filter_sweep, sampling_rate)
+    spectrum, freq_vec_fft = get_fft(filter_sweep, sampling_rate)
 
     normalized_spectrum = spectrum/np.max(spectrum)
 
-    return freq_vec[1:], normalized_spectrum[1:]
+    normalized_spectrum = np.interp(freq_vec, freq_vec_fft, normalized_spectrum)
+
+    return freq_vec, normalized_spectrum
     
 
 def get_narrow_band_signal_mid_freq(fi: float, ff: float, nf: int):
@@ -68,11 +83,13 @@ def get_narrow_band_signal_mid_freq(fi: float, ff: float, nf: int):
     sos = signal.butter(10, [800,1200], "bandpass", fs=sampling_rate, output="sos")
     filter_sweep = signal.sosfilt(sos, sweep)
 
-    spectrum, freq_vec = get_fft(filter_sweep, sampling_rate)
+    spectrum, freq_vec_fft = get_fft(filter_sweep, sampling_rate)
 
     normalized_spectrum = spectrum/np.max(spectrum)
 
-    return freq_vec[1:], normalized_spectrum[1:]
+    normalized_spectrum = np.interp(freq_vec, freq_vec_fft, normalized_spectrum)
+
+    return freq_vec, normalized_spectrum
 
 
 def get_narrow_band_signal_high_freq(fi: float, ff: float, nf: int):
@@ -88,16 +105,19 @@ def get_narrow_band_signal_high_freq(fi: float, ff: float, nf: int):
     sos = signal.butter(10, [4800,5200], "bandpass", fs=sampling_rate, output="sos")
     filter_sweep = signal.sosfilt(sos, sweep)
 
-    spectrum, freq_vec = get_fft(filter_sweep, sampling_rate)
+    spectrum, freq_vec_fft = get_fft(filter_sweep, sampling_rate)
 
     normalized_spectrum = spectrum/np.max(spectrum)
 
-    return freq_vec[1:], normalized_spectrum[1:]
+    normalized_spectrum = np.interp(freq_vec, freq_vec_fft, normalized_spectrum)
+
+    return freq_vec, normalized_spectrum
     
 
 input_signal_selector = {
     "idealWhiteNoise": get_ideal_white_noise,
     "speech": get_speech_signal,
+    "clarinet": get_clarinet_signal,
     "narrowBandSignalLowFreq": get_narrow_band_signal_low_freq,
     "narrowBandSignalMidFreq": get_narrow_band_signal_mid_freq,
     "narrowBandSignalHighFreq": get_narrow_band_signal_high_freq
