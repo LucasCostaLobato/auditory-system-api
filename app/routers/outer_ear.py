@@ -38,6 +38,8 @@ async def get_outer_ear_space_domain_analysis(
             {f"{frequencies[index]}": np.real(pressure[ind_freq, :]).tolist()}
         )
 
+    #TODO: basear endpoint na FRF para poder usar inputSignal
+
     return output
 
 @router.get("/frequency-domain-analysis")
@@ -57,7 +59,7 @@ async def get_outer_ear_frequency_domain_analysis(
     freq_vec, input_signal = input_signal_selector[inputSignal](fi,ff,nf)
 
     pressure, x_vec, freq_vec = get_eac_canal_acoustic_field(
-        ec_length,
+        ec_length / 1000,
         fi,
         ff,
         nf,
@@ -67,7 +69,6 @@ async def get_outer_ear_frequency_domain_analysis(
 
     input_ind = np.argmin(abs(x_vec - 0))
     output_ind = [np.argmin(abs(x_vec - x / 1000)) for x in positions]
-
 
     output = {"freq_vec": freq_vec.tolist()}
 
@@ -85,6 +86,8 @@ async def get_outer_ear_frequency_domain_analysis(
             output.update(
                 {f"{positions[index]}": pontual_pressure.tolist()}
             )
+
+    #TODO: endpoint está muito demorado. Verificar gargalo.
 
     return output
 
