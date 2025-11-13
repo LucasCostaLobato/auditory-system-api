@@ -65,22 +65,26 @@ async def get_outer_ear_frequency_domain_analysis(
         middleEarSeverity,
     )
 
-    ind_positions = [np.argmin(abs(x_vec - x / 1000)) for x in positions]
+    input_ind = np.argmin(abs(x_vec - 0))
+    output_ind = [np.argmin(abs(x_vec - x / 1000)) for x in positions]
+
 
     output = {"freq_vec": freq_vec.tolist()}
 
-    for index, ind_x in enumerate(ind_positions):
+    for index, ind_x in enumerate(output_ind):
+
+        EC_FRF = np.abs(pressure[:,ind_x]/pressure[:,input_ind])
+
+        pontual_pressure = np.abs(input_signal*EC_FRF)
+
         if level:
             output.update(
-                {f"{positions[index]}": (20*np.log10(np.abs(pressure[:, ind_x])/p_ref)).tolist()}
+                {f"{positions[index]}": (20*np.log10(pontual_pressure/p_ref)).tolist()}
             )
         else:
             output.update(
-                {f"{positions[index]}": np.abs(pressure[:, ind_x]).tolist()}
+                {f"{positions[index]}": pontual_pressure.tolist()}
             )
-
-    #TODO: obter resposta usando sinal de entrada
-    breakpoint()
 
     return output
 
