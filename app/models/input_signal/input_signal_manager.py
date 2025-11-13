@@ -1,8 +1,10 @@
 import json
+
 import numpy as np
 from scipy import signal
 
 from app.models.utils import get_fft
+
 
 def get_sweep_sine(sampling_rate: int, duration: float, fi: float, ff: float):
 
@@ -11,9 +13,6 @@ def get_sweep_sine(sampling_rate: int, duration: float, fi: float, ff: float):
 
     return signal.chirp(t,fi,duration,ff)
 
-def get_white_noise(sampling_rate: int, duration: float):
-
-    return np.random.normal(loc=0, scale=1, size=(int(duration*sampling_rate),))
 
 def get_ideal_white_noise(fi: float, ff: float, nf: int):
 
@@ -22,6 +21,7 @@ def get_ideal_white_noise(fi: float, ff: float, nf: int):
     ideal_white_noise = np.ones(freq_vec.shape)
 
     return freq_vec, ideal_white_noise
+
 
 def get_speech_signal(fi: float, ff: float, nf: int):
 
@@ -73,6 +73,7 @@ def get_narrow_band_signal_mid_freq(fi: float, ff: float, nf: int):
     normalized_spectrum = spectrum/np.max(spectrum)
 
     return freq_vec[1:], normalized_spectrum[1:]
+
 
 def get_narrow_band_signal_high_freq(fi: float, ff: float, nf: int):
 

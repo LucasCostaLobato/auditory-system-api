@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException, Query
-import numpy as np
 from typing import List, Optional
 
+import numpy as np
+from fastapi import APIRouter, HTTPException, Query
+
+from app.models.input_signal.input_signal_manager import input_signal_selector
 from app.models.outer_ear.deterministic_model import get_eac_canal_acoustic_field
 
 router = APIRouter(prefix="/outer-ear", tags=["outerear"])
@@ -39,25 +41,28 @@ async def get_outer_ear_space_domain_analysis(
     return output
 
 @router.get("/frequency-domain-analysis")
-async def get_outer_ear_space_domain_analysis(
+async def get_outer_ear_frequency_domain_analysis(
     ec_length: float,
     fi: float,
     ff: float,
     nf: int,
     positions: List[float] = Query(...),
-    me_condition: Optional[str] = "healthy",
-    me_severity: Optional[str] = "low",
+    middleEarCondition: Optional[str] = "healthy",
+    middleEarSeverity: Optional[str] = "low",
+    inputSignal: Optional[str] = "idealWhiteNoise",
     level: Optional[bool] = True,
 ):
     p_ref = 20*10**(-6) # reference pressure
+
+    freq_vec, input_signal = input_signal_selector[inputSignal](fi,ff,nf)
 
     pressure, x_vec, freq_vec = get_eac_canal_acoustic_field(
         ec_length,
         fi,
         ff,
         nf,
-        me_condition,
-        me_severity,
+        middleEarCondition,
+        middleEarSeverity,
     )
 
     ind_positions = [np.argmin(abs(x_vec - x / 1000)) for x in positions]
@@ -67,13 +72,15 @@ async def get_outer_ear_space_domain_analysis(
     for index, ind_x in enumerate(ind_positions):
         if level:
             output.update(
-                {f"{positions[index]}": (20*np.log10(np.abs(pressure[ind_x, :])/p_ref)).tolist()}
+                {f"{positions[index]}": (20*np.log10(np.abs(pressure[:, ind_x])/p_ref)).tolist()}
             )
         else:
             output.update(
-                {f"{positions[index]}": np.abs(pressure[ind_x, :]).tolist()}
+                {f"{positions[index]}": np.abs(pressure[:, ind_x]).tolist()}
             )
 
+    #TODO: obter resposta usando sinal de entrada
+    breakpoint()
 
     return output
 
