@@ -36,6 +36,7 @@ async def get_outer_ear_space_domain_analysis(
      to check the options).
     '''
 
+    # x_vec = np.linspace(0,(ec_length / 1000),1000)
     pressure, x_vec, freq_vec = get_eac_canal_acoustic_field(
         ec_length,
         fi,
@@ -88,40 +89,55 @@ async def get_outer_ear_frequency_domain_analysis(
      - level, a boolean to define the output unit. If True, the Sound Pressure Level, in dB SPL
      is returned.
     '''
-    p_ref = 20*10**(-6) # reference pressure
+    # Reference pressure
+    p_ref = 20*10**(-6) 
 
+    # Getting the input signal
     freq_vec, input_signal = input_signal_selector[inputSignal](fi,ff,nf)
 
-    pressure, x_vec, freq_vec = get_eac_canal_acoustic_field(
+    # Builing the space and frequency vectors
+    x_vec =[each_position / 1000 for each_position in positions]
+    freq_vec = np.linspace(fi, ff, nf)
+
+    # Adding 0 position (ear canal entrance in the case the user did not request
+    # It is needed to compute the FRF considering the input signal at ear canal entrance (x=0)
+    if 0 in positions:
+        x_vec = np.array(x_vec)
+    else:
+        x_vec.insert(0,0)
+        x_vec = np.array(x_vec)
+
+    # Computing the pressure along the ear canal 
+    pressure = get_eac_canal_acoustic_field(
         ec_length / 1000,
-        fi,
-        ff,
-        nf,
+        freq_vec,
+        x_vec,
         middleEarCondition,
         middleEarSeverity,
     )
 
-    input_ind = np.argmin(abs(x_vec - 0))
-    output_ind = [np.argmin(abs(x_vec - x / 1000)) for x in positions]
-
     output = {"freq_vec": freq_vec.tolist()}
+    
+    for ind_x, each_position in enumerate(positions):
 
-    for index, ind_x in enumerate(output_ind):
+        # If user did not requested position 0, skip the pressure at 0
+        if 0 not in positions:
+            ind_x = ind_x + 1
 
-        EC_FRF = np.abs(pressure[:,ind_x]/pressure[:,input_ind])
+        # Compute the FRF between the ear canal entrance and "each_position"
+        EC_FRF = np.abs(pressure[:,ind_x]/pressure[:,0])
 
+        # Computing the pressure considering the input_signal at ear canal entrance 
         pontual_pressure = np.abs(input_signal*EC_FRF)
 
         if level:
             output.update(
-                {f"{positions[index]}": (20*np.log10(pontual_pressure/p_ref)).tolist()}
+                {f"{each_position}": (20*np.log10(pontual_pressure/p_ref)).tolist()}
             )
         else:
             output.update(
-                {f"{positions[index]}": pontual_pressure.tolist()}
+                {f"{each_position}": pontual_pressure.tolist()}
             )
-
-    #TODO: endpoint está muito demorado. Verificar gargalo.
 
     return output
 
