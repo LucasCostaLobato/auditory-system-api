@@ -51,7 +51,7 @@ def lumped_element_middle_ear_model(x: dict, freq: list, condition: str = "healt
     - x the mechanical parameters of middle ear according
     to function get_middle_ear_parameters()
     - freq is the frequency vector which the FRF will be defined
-    - condition is the middle ear condition
+    - condition is the middle ear condition: "healty", "otosclerosis", "malFixation"
     - severity is the severity of the middle ear conditions. If condition
     is 'healthy', severity is ignored 
      

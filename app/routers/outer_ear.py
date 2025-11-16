@@ -18,7 +18,23 @@ async def get_outer_ear_space_domain_analysis(
     frequencies: List[float] = Query(...),
     me_condition: Optional[str] = "healthy",
     me_severity: Optional[str] = "low",
+    inputSignal: Optional[str] = "idealWhiteNoise",
 ):
+    '''
+    This endpoint return the pressure in the ear canal length domain for a given list
+    of "frequencies", being:
+     - ec_length the ear canal lenth, in mm (milimeters);
+     - fi the initial frequency, in Hz;
+     - ff the final frequency, in Hz;
+     - nf, number of frequencies, dimensionless;
+     - frequencies, the frequencies to be analyzed, in mm (milimeters);
+     - middleEarCondition, the condition of the middle ear: "healty", 
+     "otosclerosis", "malFixation";
+     - middleEarSeverity, the severity of the middle ear condition (ignored if 
+     middleEarCondition is "healthy): "low", "medium", "high";
+     - inputSignal, the input signal at the ear canal entrance (see input_signal_selector
+     to check the options).
+    '''
 
     pressure, x_vec, freq_vec = get_eac_canal_acoustic_field(
         ec_length,
@@ -54,6 +70,24 @@ async def get_outer_ear_frequency_domain_analysis(
     inputSignal: Optional[str] = "idealWhiteNoise",
     level: Optional[bool] = True,
 ):
+    '''
+    This endpoint return the pressure in the frequency domain at given "positions",
+    being:
+     - ec_length the ear canal lenth, in mm (milimeters);
+     - fi the initial frequency, in Hz;
+     - ff the final frequency, in Hz;
+     - nf, number of frequencies, dimensionless;
+     - positions, the positions from the ear canal entrance to be analyzed, in 
+     mm (milimeters);
+     - middleEarCondition, the condition of the middle ear: "healty", 
+     "otosclerosis", "malFixation";
+     - middleEarSeverity, the severity of the middle ear condition (ignored if 
+     middleEarCondition is "healthy): "low", "medium", "high";
+     - inputSignal, the input signal at the ear canal entrance (see input_signal_selector
+     to check the options);
+     - level, a boolean to define the output unit. If True, the Sound Pressure Level, in dB SPL
+     is returned.
+    '''
     p_ref = 20*10**(-6) # reference pressure
 
     freq_vec, input_signal = input_signal_selector[inputSignal](fi,ff,nf)
