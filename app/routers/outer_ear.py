@@ -12,12 +12,9 @@ router = APIRouter(prefix="/outer-ear", tags=["outerear"])
 @router.get("/space-domain-analysis")
 async def get_outer_ear_space_domain_analysis(
     ec_length: float,
-    fi: float,
-    ff: float,
-    nf: int,
     frequencies: List[float] = Query(...),
-    me_condition: Optional[str] = "healthy",
-    me_severity: Optional[str] = "low",
+    middleEarCondition: Optional[str] = "healthy",
+    middleEarSeverity: Optional[str] = "low",
     inputSignal: Optional[str] = "idealWhiteNoise",
 ):
     '''
@@ -36,26 +33,36 @@ async def get_outer_ear_space_domain_analysis(
      to check the options).
     '''
 
-    # x_vec = np.linspace(0,(ec_length / 1000),1000)
-    pressure, x_vec, freq_vec = get_eac_canal_acoustic_field(
-        ec_length,
-        fi,
-        ff,
-        nf,
-        me_condition,
-        me_severity,
+    # Builing the space and frequency vectors
+    x_vec = np.linspace(0,(ec_length / 1000),1000)
+    freq_vec = np.array(frequencies)
+
+    # Getting the input signal
+    input_signal = input_signal_selector[inputSignal](freq_vec)
+
+    # Computing the pressure along the ear canal 
+    pressure = get_eac_canal_acoustic_field(
+        ec_length / 1000,
+        freq_vec,
+        x_vec,
+        middleEarCondition,
+        middleEarSeverity,
     )
 
-    ind_freqs = [np.argmin(abs(freq_vec - f)) for f in frequencies]
-
+    # Building output 
     output = {"x_vec": x_vec.tolist()}
 
-    for index, ind_freq in enumerate(ind_freqs):
-        output.update(
-            {f"{frequencies[index]}": np.real(pressure[ind_freq, :]).tolist()}
-        )
+    for ind_f, each_freq in enumerate(frequencies):
+        EC_FRF = list()
+        for inx_x, each_x in enumerate(x_vec):
+            EC_FRF.append(np.abs(pressure[ind_f,inx_x]/pressure[ind_f,0]))
 
-    #TODO: basear endpoint na FRF para poder usar inputSignal
+        # Computing the pressure considering the input_signal at ear canal entrance 
+        pontual_pressure = np.abs(input_signal[ind_f]*np.array(EC_FRF))
+
+        output.update(
+            {f"{each_freq}": pontual_pressure.tolist()}
+        )
 
     return output
 
@@ -92,12 +99,12 @@ async def get_outer_ear_frequency_domain_analysis(
     # Reference pressure
     p_ref = 20*10**(-6) 
 
-    # Getting the input signal
-    freq_vec, input_signal = input_signal_selector[inputSignal](fi,ff,nf)
-
     # Builing the space and frequency vectors
     x_vec =[each_position / 1000 for each_position in positions]
     freq_vec = np.linspace(fi, ff, nf)
+
+    # Getting the input signal
+    input_signal = input_signal_selector[inputSignal](freq_vec)
 
     # Adding 0 position (ear canal entrance in the case the user did not request
     # It is needed to compute the FRF considering the input signal at ear canal entrance (x=0)
@@ -178,5 +185,13 @@ async def get_outer_ear_frf(
         output.update(
             {f"frf": np.abs(EC_FRF).tolist()}
         )
+
+    #TODO: Adequar este endpoint
+
+    #TODO: adicionar testes unitários e testes ponta-a-ponta
+
+    #TODO: Atualizar readme
+
+    #TODO: criar swagger
 
     return output

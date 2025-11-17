@@ -18,7 +18,9 @@ async def get_input_signal_magnitude_spectrum(
     
     p_ref = 20*10**(-6) # reference pressure
 
-    freq_vec, input_signal = input_signal_selector[inputSignal](fi,ff,nf)
+    freq_vec = np.linspace(fi, ff, nf)
+
+    input_signal = input_signal_selector[inputSignal](freq_vec)
 
     if level:
         amplitude = 20*np.log10(np.abs(input_signal)/p_ref)
