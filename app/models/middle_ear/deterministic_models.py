@@ -44,7 +44,7 @@ def get_stiffness_matrix(
     return np.matrix([l1, l2, l3, l4])
 
 
-def lumped_element_middle_ear_model(x: dict, freq: list, condition: str = "healthy", severity: str = "low") -> dict:
+def lumped_element_middle_ear_model(x: dict, freq: list, meCondition: str = "healthy", severity: str = "low") -> dict:
     """This function computes the modal solution of the deterministic model
     of the human middle ear, being:
     
@@ -57,11 +57,11 @@ def lumped_element_middle_ear_model(x: dict, freq: list, condition: str = "healt
      
     For details, see https://doi.org/10.55753/aev.v35e52.34"""
 
-    if condition == "healthy":
+    if meCondition == "healthy":
         k7 = x["k7"]
         k3 = x["k3"]
 
-    if condition == "otosclerosis":
+    if meCondition == "otosclerosis":
         k3 = x["k3"]
 
         if severity == "low":
@@ -71,7 +71,7 @@ def lumped_element_middle_ear_model(x: dict, freq: list, condition: str = "healt
         if severity == "high":
             k7 = x["k7"]*1000
 
-    if condition == "malFixation":
+    if meCondition == "malFixation":
         k7 = x["k7"]
 
         if severity == "low":
@@ -80,7 +80,6 @@ def lumped_element_middle_ear_model(x: dict, freq: list, condition: str = "healt
             k3 = x["k3"]*100
         if severity == "high":
             k3 = x["k3"]*1000
-
 
     M = get_mass_matrix(x["m1"], x["m2"], x["m3"], x["m4"])
     K = get_stiffness_matrix(

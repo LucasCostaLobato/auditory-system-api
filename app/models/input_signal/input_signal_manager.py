@@ -103,7 +103,7 @@ def get_narrow_band_signal_high_freq(freq_vec):
     
 
 input_signal_selector = {
-    "idealWhiteNoise": get_ideal_white_noise,
+    "white_noise": get_ideal_white_noise,
     "speech": get_speech_signal,
     "clarinet": get_clarinet_signal,
     "narrowBandSignalLowFreq": get_narrow_band_signal_low_freq,

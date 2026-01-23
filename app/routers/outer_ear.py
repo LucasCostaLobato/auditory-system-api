@@ -13,8 +13,8 @@ router = APIRouter(prefix="/outer-ear", tags=["outerear"])
 async def get_outer_ear_space_domain_analysis(
     ec_length: float,
     frequencies: List[float] = Query(...),
-    middleEarCondition: Optional[str] = "healthy",
-    middleEarSeverity: Optional[str] = "low",
+    meCondition: Optional[str] = "healthy",
+    meSeverity: Optional[str] = "low",
     inputSignal: Optional[str] = "idealWhiteNoise",
 ):
     '''
@@ -45,12 +45,12 @@ async def get_outer_ear_space_domain_analysis(
         ec_length / 1000,
         freq_vec,
         x_vec,
-        middleEarCondition,
-        middleEarSeverity,
+        meCondition,
+        meSeverity,
     )
 
     # Building output 
-    output = {"x_vec": x_vec.tolist()}
+    output = {"x_vec": (x_vec*1000).tolist()}
 
     for ind_f, each_freq in enumerate(frequencies):
         EC_FRF = list()
@@ -73,8 +73,8 @@ async def get_outer_ear_frequency_domain_analysis(
     ff: float,
     nf: int,
     positions: List[float] = Query(...),
-    middleEarCondition: Optional[str] = "healthy",
-    middleEarSeverity: Optional[str] = "low",
+    meCondition: Optional[str] = "healthy",
+    meSeverity: Optional[str] = "low",
     inputSignal: Optional[str] = "idealWhiteNoise",
     level: Optional[bool] = True,
 ):
@@ -119,8 +119,8 @@ async def get_outer_ear_frequency_domain_analysis(
         ec_length / 1000,
         freq_vec,
         x_vec,
-        middleEarCondition,
-        middleEarSeverity,
+        meCondition,
+        meSeverity,
     )
 
     output = {"freq_vec": freq_vec.tolist()}
@@ -154,20 +154,23 @@ async def get_outer_ear_frf(
     fi: float,
     ff: float,
     nf: int,
-    input_position: float,
-    output_position: float,
-    me_condition: Optional[str] = "healthy",
-    me_severity: Optional[str] = "low",
+    meCondition: Optional[str] = "healthy",
+    meSeverity: Optional[str] = "low",
     level: Optional[bool] = True,
 ):
+    
+    input_position = 0
+    output_position = ec_length
 
-    pressure, x_vec, freq_vec = get_eac_canal_acoustic_field(
-        ec_length,
-        fi,
-        ff,
-        nf,
-        me_condition,
-        me_severity,
+    freq_vec = np.linspace(fi, ff, nf)
+    x_vec = np.linspace(0,(ec_length / 1000),1000)
+
+    pressure = get_eac_canal_acoustic_field(
+        ec_length / 1000,
+        freq_vec,
+        x_vec,
+        meCondition,
+        meSeverity,
     )
 
     input_ind = np.argmin(abs(x_vec - input_position))
