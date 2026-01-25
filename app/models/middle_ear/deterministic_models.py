@@ -85,7 +85,7 @@ def lumped_element_middle_ear_model(x: dict, freq: list, meCondition: str = "hea
     K = get_stiffness_matrix(
         x["k1"], x["k2"], k3, x["k4"], x["k5"], x["k6"], k7
     )
-    eta = [x["eta1"], x["eta2"], x["eta3"], x["eta4"]]
+    eta = [x["eta1"], x["eta2"], x["eta3"], 50*x["eta4"]]
     tm_area = x["tmArea"]
 
     Zair = 343 * 1.21  # Characteristic air impedance
