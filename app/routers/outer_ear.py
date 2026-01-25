@@ -6,11 +6,13 @@ from fastapi import APIRouter, HTTPException, Query
 from app.models.input_signal.input_signal_manager import input_signal_selector
 from app.models.outer_ear.deterministic_model import get_eac_canal_acoustic_field
 
+from app.models.outer_ear.outer_ear_functions import get_outer_ear_frf
+
 router = APIRouter(prefix="/outer-ear", tags=["outerear"])
 
 
 @router.get("/space-domain-analysis")
-async def get_outer_ear_space_domain_analysis(
+async def outer_ear_space_domain_analysis(
     ec_length: float,
     frequencies: List[float] = Query(...),
     meCondition: Optional[str] = "healthy",
@@ -25,9 +27,9 @@ async def get_outer_ear_space_domain_analysis(
      - ff the final frequency, in Hz;
      - nf, number of frequencies, dimensionless;
      - frequencies, the frequencies to be analyzed, in mm (milimeters);
-     - middleEarCondition, the condition of the middle ear: "healty", 
+     - meCondition, the condition of the middle ear: "healty", 
      "otosclerosis", "malFixation";
-     - middleEarSeverity, the severity of the middle ear condition (ignored if 
+     - meSeverity, the severity of the middle ear condition (ignored if 
      middleEarCondition is "healthy): "low", "medium", "high";
      - inputSignal, the input signal at the ear canal entrance (see input_signal_selector
      to check the options).
@@ -54,7 +56,7 @@ async def get_outer_ear_space_domain_analysis(
 
     for ind_f, each_freq in enumerate(frequencies):
         EC_FRF = list()
-        for inx_x, each_x in enumerate(x_vec):
+        for inx_x, _ in enumerate(x_vec):
             EC_FRF.append(np.abs(pressure[ind_f,inx_x]/pressure[ind_f,0]))
 
         # Computing the pressure considering the input_signal at ear canal entrance 
@@ -67,7 +69,7 @@ async def get_outer_ear_space_domain_analysis(
     return output
 
 @router.get("/frequency-domain-analysis")
-async def get_outer_ear_frequency_domain_analysis(
+async def outer_ear_frequency_domain_analysis(
     ec_length: float,
     fi: float,
     ff: float,
@@ -149,7 +151,7 @@ async def get_outer_ear_frequency_domain_analysis(
     return output
 
 @router.get("/frf")
-async def get_outer_ear_frf(
+async def outer_ear_frf(
     ec_length: float,
     fi: float,
     ff: float,
@@ -165,36 +167,4 @@ async def get_outer_ear_frf(
     freq_vec = np.linspace(fi, ff, nf)
     x_vec = np.linspace(0,(ec_length / 1000),1000)
 
-    pressure = get_eac_canal_acoustic_field(
-        ec_length / 1000,
-        freq_vec,
-        x_vec,
-        meCondition,
-        meSeverity,
-    )
-
-    input_ind = np.argmin(abs(x_vec - input_position))
-    output_ind = np.argmin(abs(x_vec - output_position))
-    
-    EC_FRF = np.abs(pressure[:,output_ind]/pressure[:,input_ind])
-
-    output = {"freq_vec": freq_vec.tolist()}
-
-    if level:
-        output.update(
-            {f"frf": (20*np.log10(np.abs(EC_FRF))).tolist()}
-        )
-    else:
-        output.update(
-            {f"frf": np.abs(EC_FRF).tolist()}
-        )
-
-    #TODO: Adequar este endpoint
-
-    #TODO: adicionar testes unitários e testes ponta-a-ponta
-
-    #TODO: Atualizar readme
-
-    #TODO: criar swagger
-
-    return output
+    return get_outer_ear_frf(ec_length,input_position,output_position,freq_vec,x_vec,meCondition,meSeverity,level)

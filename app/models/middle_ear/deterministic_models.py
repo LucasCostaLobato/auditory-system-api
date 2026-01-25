@@ -129,10 +129,10 @@ def lumped_element_middle_ear_model(x: dict, freq: list, meCondition: str = "hea
         ER.append((np.abs((Zme[ind] - Zair / tm_area) / (Zme[ind] + Zair / tm_area)) ** 2))
 
     return {
-        "Htm": np.array(Htm),
-        "Hmal": np.array(Hmal),
-        "Hinc": np.array(Hinc),
-        "Hfp": np.array(Hfp),
+        "tympanic_membrane": np.array(Htm),
+        "malleus": np.array(Hmal),
+        "incus": np.array(Hinc),
+        "stapes": np.array(Hfp),
         "Zme": np.array(Zme),
         "ER": np.array(ER),
         "naturalFrequencies": natural_freq,
