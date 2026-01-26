@@ -51,18 +51,17 @@ def lumped_element_middle_ear_model(x: dict, freq: list, meCondition: str = "hea
     - x the mechanical parameters of middle ear according
     to function get_middle_ear_parameters()
     - freq is the frequency vector which the FRF will be defined
-    - condition is the middle ear condition: "healty", "otosclerosis", "malFixation"
+    - condition is the middle ear condition: "healty", "otosclerosis", "malleus_fixation"
     - severity is the severity of the middle ear conditions. If condition
     is 'healthy', severity is ignored 
      
     For details, see https://doi.org/10.55753/aev.v35e52.34"""
 
-    if meCondition == "healthy":
-        k7 = x["k7"]
-        k3 = x["k3"]
+    k7 = x["k7"]
+    k3 = x["k3"]
+    m1 = x["m1"]
 
     if meCondition == "otosclerosis":
-        k3 = x["k3"]
 
         if severity == "low":
             k7 = x["k7"]*10
@@ -71,8 +70,7 @@ def lumped_element_middle_ear_model(x: dict, freq: list, meCondition: str = "hea
         if severity == "high":
             k7 = x["k7"]*1000
 
-    if meCondition == "malFixation":
-        k7 = x["k7"]
+    if meCondition == "malleus_fixation":
 
         if severity == "low":
             k3 = x["k3"]*10
@@ -81,7 +79,16 @@ def lumped_element_middle_ear_model(x: dict, freq: list, meCondition: str = "hea
         if severity == "high":
             k3 = x["k3"]*1000
 
-    M = get_mass_matrix(x["m1"], x["m2"], x["m3"], x["m4"])
+    if meCondition == "otitis_media":
+
+        if severity == "low":
+            m1 = x["m1"]*10
+        if severity == "medium":
+            m1 = x["m1"]*50
+        if severity == "high":
+            m1 = x["m1"]*100
+
+    M = get_mass_matrix(m1, x["m2"], x["m3"], x["m4"])
     K = get_stiffness_matrix(
         x["k1"], x["k2"], k3, x["k4"], x["k5"], x["k6"], k7
     )

@@ -28,7 +28,7 @@ async def outer_ear_space_domain_analysis(
      - nf, number of frequencies, dimensionless;
      - frequencies, the frequencies to be analyzed, in mm (milimeters);
      - meCondition, the condition of the middle ear: "healty", 
-     "otosclerosis", "malFixation";
+     "otosclerosis", "malleus_fixation";
      - meSeverity, the severity of the middle ear condition (ignored if 
      middleEarCondition is "healthy): "low", "medium", "high";
      - inputSignal, the input signal at the ear canal entrance (see input_signal_selector
@@ -90,7 +90,7 @@ async def outer_ear_frequency_domain_analysis(
      - positions, the positions from the ear canal entrance to be analyzed, in 
      mm (milimeters);
      - middleEarCondition, the condition of the middle ear: "healty", 
-     "otosclerosis", "malFixation";
+     "otosclerosis", "malleus_fixation";
      - middleEarSeverity, the severity of the middle ear condition (ignored if 
      middleEarCondition is "healthy): "low", "medium", "high";
      - inputSignal, the input signal at the ear canal entrance (see input_signal_selector
