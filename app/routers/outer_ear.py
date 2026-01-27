@@ -35,6 +35,8 @@ async def outer_ear_space_domain_analysis(
      to check the options).
     '''
 
+    p_ref = 20*10**(-6) 
+
     # Builing the space and frequency vectors
     x_vec = np.linspace(0,(ec_length / 1000),1000)
     freq_vec = np.array(frequencies)
@@ -60,7 +62,7 @@ async def outer_ear_space_domain_analysis(
             EC_FRF.append(np.abs(pressure[ind_f,inx_x]/pressure[ind_f,0]))
 
         # Computing the pressure considering the input_signal at ear canal entrance 
-        pontual_pressure = np.abs(input_signal[ind_f]*np.array(EC_FRF))
+        pontual_pressure = 20*np.log10(np.abs(input_signal[ind_f]*np.array(EC_FRF))/p_ref)
 
         output.update(
             {f"{each_freq}": pontual_pressure.tolist()}
