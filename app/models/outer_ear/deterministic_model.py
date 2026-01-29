@@ -8,6 +8,7 @@ def analytical_ear_canal_model(
     L: float,
     A: float,
     freq_vec: np.array,
+    x_vec: np.array,
     Zme: np.array,
     c0: float = 343,
     rho0: float = 1.21,
@@ -19,6 +20,7 @@ def analytical_ear_canal_model(
     - L the ear canal length, in m
     - A the area of ear canal cross section, in m^2
     - freq_vec the vector of frequencies to be analyzed, in Hz
+    - x_vec the vector of positions to be computed, in m (meters)
     - Zme the complex middle ear input impedance, in N*s/m^3, defined for the same frequencies of freq_vec
     - c0 the sound speed, in m/s
     - rho0 the air density, in kg/m^3
@@ -26,7 +28,6 @@ def analytical_ear_canal_model(
     - eta the acoustic damping, dimensionless"""
 
     P0 = u0*rho0*c0
-    x_vec = np.linspace(0,L,1000)
 
     pressure = np.zeros((len(freq_vec),len(x_vec)), dtype=complex)
     velocity = np.zeros((len(freq_vec),len(x_vec)), dtype=complex)
@@ -49,14 +50,13 @@ def analytical_ear_canal_model(
             pressure[ind_f,ind_x] = AA + BB
             velocity[ind_f,ind_x] = (AA - BB)/(rho0*c0)
     
-    return pressure, velocity, x_vec
+    return pressure, velocity
 
 
 def get_eac_canal_acoustic_field(
     ec_length: float,
-    fi: float,
-    ff: float,
-    nf: int,
+    freq_vec: np.array,
+    x_vec: np.array,
     me_condition: Optional[str] = "healthy",
     me_severity: Optional[str] = "low",
 ):
@@ -66,17 +66,15 @@ def get_eac_canal_acoustic_field(
     if me_severity is None:
         me_severity = "low"
 
-    freq_vec = np.linspace(fi, ff, nf)
-
     me_param = get_middle_ear_parameters("LVATB1")
 
     middle_ear_model = lumped_element_middle_ear_model(
         me_param, freq_vec, me_condition, me_severity
     )
 
-    pressure, _, x_vec = analytical_ear_canal_model(
-        ec_length, me_param["tmArea"], freq_vec, middle_ear_model["Zme"]
+    pressure, _ = analytical_ear_canal_model(
+        ec_length, me_param["tmArea"], freq_vec, x_vec, middle_ear_model["Zme"]
     )
 
-    return pressure, x_vec, freq_vec
+    return pressure
 

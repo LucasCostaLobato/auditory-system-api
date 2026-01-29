@@ -1,8 +1,10 @@
 import json
+
 import numpy as np
 from scipy import signal
 
 from app.models.utils import get_fft
+
 
 def get_sweep_sine(sampling_rate: int, duration: float, fi: float, ff: float):
 
@@ -11,92 +13,99 @@ def get_sweep_sine(sampling_rate: int, duration: float, fi: float, ff: float):
 
     return signal.chirp(t,fi,duration,ff)
 
-def get_white_noise(sampling_rate: int, duration: float):
 
-    return np.random.normal(loc=0, scale=1, size=(int(duration*sampling_rate),))
-
-def get_ideal_white_noise(fi: float, ff: float, nf: int):
-
-    freq_vec = np.linspace(fi, ff, nf)
+def get_ideal_white_noise(freq_vec):
 
     ideal_white_noise = np.ones(freq_vec.shape)
 
-    return freq_vec, ideal_white_noise
+    return ideal_white_noise
 
-def get_speech_signal(fi: float, ff: float, nf: int):
 
-    freq_vec = np.linspace(fi, ff, nf)
+def get_speech_signal(freq_vec):
 
     with open('app/database/speech_signal.json', 'r') as file:
         data = json.load(file)
 
     speech_signal = np.interp(freq_vec, data["freq"], data["data"])
 
-    return freq_vec, speech_signal
+    return speech_signal
 
 
-def get_narrow_band_signal_low_freq(fi: float, ff: float, nf: int):
 
-    freq_vec = np.linspace(fi, ff, nf)
+def get_clarinet_signal(freq_vec):
 
-    sampling_rate = 2*ff
+    with open('app/database/clarinet_signal.json', 'r') as file:
+        data = json.load(file)
+
+    clarinet_signal = np.interp(freq_vec, data["freq"], data["data"])
+
+    return clarinet_signal
+
+
+def get_narrow_band_signal_low_freq(freq_vec):
+
+    sampling_rate = 2*freq_vec[-1]
 
     duration = 1/(freq_vec[2]-freq_vec[1])
 
-    sweep = get_sweep_sine(sampling_rate, duration, fi, ff)
+    sweep = get_sweep_sine(sampling_rate, duration, freq_vec[0], freq_vec[-1])
 
     sos = signal.butter(10, [80,120], "bandpass", fs=sampling_rate, output="sos")
     filter_sweep = signal.sosfilt(sos, sweep)
 
-    spectrum, freq_vec = get_fft(filter_sweep, sampling_rate)
+    spectrum, freq_vec_fft = get_fft(filter_sweep, sampling_rate)
 
     normalized_spectrum = spectrum/np.max(spectrum)
 
-    return freq_vec[1:], normalized_spectrum[1:]
+    normalized_spectrum = np.interp(freq_vec, freq_vec_fft, normalized_spectrum)
+
+    return normalized_spectrum
     
 
-def get_narrow_band_signal_mid_freq(fi: float, ff: float, nf: int):
+def get_narrow_band_signal_mid_freq(freq_vec):
 
-    freq_vec = np.linspace(fi, ff, nf)
-
-    sampling_rate = 2*ff
+    sampling_rate = 2*freq_vec[-1]
 
     duration = 1/(freq_vec[2]-freq_vec[1])
 
-    sweep = get_sweep_sine(sampling_rate, duration, fi, ff)
+    sweep = get_sweep_sine(sampling_rate, duration, freq_vec[0], freq_vec[-1])
 
     sos = signal.butter(10, [800,1200], "bandpass", fs=sampling_rate, output="sos")
     filter_sweep = signal.sosfilt(sos, sweep)
 
-    spectrum, freq_vec = get_fft(filter_sweep, sampling_rate)
+    spectrum, freq_vec_fft = get_fft(filter_sweep, sampling_rate)
 
     normalized_spectrum = spectrum/np.max(spectrum)
 
-    return freq_vec[1:], normalized_spectrum[1:]
+    normalized_spectrum = np.interp(freq_vec, freq_vec_fft, normalized_spectrum)
 
-def get_narrow_band_signal_high_freq(fi: float, ff: float, nf: int):
+    return normalized_spectrum
 
-    freq_vec = np.linspace(fi, ff, nf)
 
-    sampling_rate = 2*ff
+def get_narrow_band_signal_high_freq(freq_vec):
+
+    sampling_rate = 2*freq_vec[-1]
 
     duration = 1/(freq_vec[2]-freq_vec[1])
 
-    sweep = get_sweep_sine(sampling_rate, duration, fi, ff)
+    sweep = get_sweep_sine(sampling_rate, duration, freq_vec[0], freq_vec[-1])
 
     sos = signal.butter(10, [4800,5200], "bandpass", fs=sampling_rate, output="sos")
     filter_sweep = signal.sosfilt(sos, sweep)
 
-    spectrum, freq_vec = get_fft(filter_sweep, sampling_rate)
+    spectrum, freq_vec_fft = get_fft(filter_sweep, sampling_rate)
 
     normalized_spectrum = spectrum/np.max(spectrum)
 
-    return freq_vec[1:], normalized_spectrum[1:]
+    normalized_spectrum = np.interp(freq_vec, freq_vec_fft, normalized_spectrum)
+
+    return normalized_spectrum
     
 
 input_signal_selector = {
-    "idealWhiteNoise": get_ideal_white_noise,
+    "white_noise": get_ideal_white_noise,
     "speech": get_speech_signal,
+    "clarinet": get_clarinet_signal,
     "narrowBandSignalLowFreq": get_narrow_band_signal_low_freq,
     "narrowBandSignalMidFreq": get_narrow_band_signal_mid_freq,
     "narrowBandSignalHighFreq": get_narrow_band_signal_high_freq
