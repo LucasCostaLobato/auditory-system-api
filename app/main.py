@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import outer_ear, middle_ear, input_signal
+from app.routers import outer_ear, middle_ear, input_signal, inner_ear
 from fastapi.middleware.cors import CORSMiddleware
 
 # API instance
@@ -20,3 +20,4 @@ app.add_middleware(
 app.include_router(input_signal.router)
 app.include_router(outer_ear.router)
 app.include_router(middle_ear.router)
+app.include_router(inner_ear.router)
