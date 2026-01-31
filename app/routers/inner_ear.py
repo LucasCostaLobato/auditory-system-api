@@ -17,7 +17,7 @@ async def get_basilar_membrane_travelling_waves(
     # Criar modelo
     bm = BasilarMembraneModel(n_sections=500)
 
-    fs = get_sampling_rate(freq_stimulus)
+    fs = 44100#get_sampling_rate(freq_stimulus)
 
     duration = 0.05
 
@@ -26,9 +26,9 @@ async def get_basilar_membrane_travelling_waves(
 
     _, displacement = bm.simulate_response(sound, fs, duration)
 
-    extrapolated_displacement = displacement[::10,:]
+    extrapolated_displacement = displacement[::25,:]
 
-    y = [each_y.tolist() for each_y in extrapolated_displacement]
+    y = [(each_y*1e9).tolist() for each_y in extrapolated_displacement]
 
     output = {
         "x_vec": (1000*bm.x).tolist(),
