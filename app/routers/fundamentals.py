@@ -34,9 +34,9 @@ async def get_acoustics_fundamentals(
 
 
 @router.get("/vibrations")
-async def get_acoustics_fundamentals(k: List, m: List, c: List):
+async def get_vibration_fundamentals(stiffness: float, mass: float, damping: float):
 
-    frf, freq = get_one_dof(m, k, c)
+    frf, freq = get_one_dof(mass, stiffness, damping)
 
     output = {"freq_vec": freq.tolist(), "frf": frf.tolist()}
     return output
