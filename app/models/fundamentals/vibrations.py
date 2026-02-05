@@ -11,4 +11,4 @@ def get_one_dof(m: float, k: float, c: float):
 
     frf = np.linalg.inv(D)
 
-    return np.abs(frf), freq
+    return np.abs(frf[1:]), freq[1:]
