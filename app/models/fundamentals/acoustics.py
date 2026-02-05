@@ -27,4 +27,4 @@ def get_sine_signal(frequencies: List, amplitudes: List, phases: List, fs: int, 
     spectrum, freq_vec_fft = get_fft(signal, fs)
 
 
-    return signal[:int(0.1*fs)], time[:int(0.1*fs)], np.abs(spectrum[1:]), freq_vec_fft[1:]
+    return signal[:int(0.1*fs)+1], time[:int(0.1*fs)+1], np.abs(spectrum[1:]), freq_vec_fft[1:]

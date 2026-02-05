@@ -16,7 +16,7 @@ async def get_acoustics_fundamentals(
     phases: List[float] = Query(...),
 ):
     
-    fs = 2000
+    fs = 4000
     duration = 10
 
     signal, time, spectrum, freq_vec_fft = get_sine_signal(
