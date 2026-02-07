@@ -16,15 +16,16 @@ def get_sine_signal(frequencies: List, amplitudes: List, phases: List, fs: int, 
     - duration: total tima duration of the signal, in seconds
     '''
 
+    c0 = 343
+
     n_samples = int(fs*duration)
 
     time = np.linspace(0,duration,n_samples)
-    space = np.linspace(0,343*duration,n_samples)
+    space = np.linspace(0,c0*duration,n_samples)
     
     signal_time = np.zeros(n_samples)
     signal_space = np.zeros(n_samples)
 
-    c0 = 343
 
     for ind, freq in enumerate(frequencies):
         wave_number = (2*np.pi*freq)/c0
