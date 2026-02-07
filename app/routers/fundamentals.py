@@ -19,13 +19,15 @@ async def get_acoustics_fundamentals(
     fs = 4000
     duration = 10
 
-    signal, time, spectrum, freq_vec_fft = get_sine_signal(
+    signal_space, space, signal_time, time, spectrum, freq_vec_fft = get_sine_signal(
         frequencies, amplitudes, phases, fs, duration
     )
 
     output = {
+        "signal_space": signal_space.tolist(),
+        "space": space.tolist(),
+        "signal_time": signal_time.tolist(),
         "time": time.tolist(),
-        "signal": signal.tolist(),
         "spectrum": spectrum.tolist(),
         "freq_vec": freq_vec_fft.tolist(),
     }
