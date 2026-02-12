@@ -21,7 +21,7 @@ def analytical_ear_canal_model(
     - A the area of ear canal cross section, in m^2
     - freq_vec the vector of frequencies to be analyzed, in Hz
     - x_vec the vector of positions to be computed, in m (meters)
-    - Zme the complex middle ear input impedance, in N*s/m^3, defined for the same frequencies of freq_vec
+    - Zme the complex middle ear input impedance, in N*s/m^5, defined for the same frequencies of freq_vec
     - c0 the sound speed, in m/s
     - rho0 the air density, in kg/m^3
     - u0 the input particle velocity at ear canal entrance
@@ -34,7 +34,7 @@ def analytical_ear_canal_model(
 
 
     for ind_f, f in enumerate(freq_vec):
-        Zme_norm = (Zme[ind_f]) / (-rho0 * c0)
+        Zme_norm = (A*Zme[ind_f]) / (-rho0 * c0)
 
         k = ((2 * np.pi * f) / c0) + 1j * eta * ((2 * np.pi * f) / c0)
 
