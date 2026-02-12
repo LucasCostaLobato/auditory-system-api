@@ -6,7 +6,7 @@ from scipy.signal import find_peaks
 from app.models.utils import get_fft
 
 
-def get_sine_signal(frequencies: List, amplitudes: List, phases: List, fs: int, duration: float):
+def get_sine_signal(frequencies: List, amplitudes: List, phases: List, fs: int, duration: float, c0: float):
     '''
     This function returns the sum of sine functions according to the lists
     - frequencies: frequencies in Hz
@@ -15,8 +15,6 @@ def get_sine_signal(frequencies: List, amplitudes: List, phases: List, fs: int, 
     - fs: sampling rate, in Hz
     - duration: total tima duration of the signal, in seconds
     '''
-
-    c0 = 343
 
     n_samples = int(fs*duration)
 

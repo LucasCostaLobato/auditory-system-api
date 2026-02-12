@@ -5,22 +5,25 @@ from fastapi import APIRouter, Query
 from app.models.fundamentals.acoustics import get_sine_signal
 from app.models.fundamentals.vibrations import get_one_dof
 
+medium_manager = {"air": 343, "water": 1500}
 
 router = APIRouter(prefix="/fundamentals", tags=["fundamentals"])
 
 
 @router.get("/acoustics")
 async def get_acoustics_fundamentals(
+    medium: str,
     amplitudes: List[float] = Query(...),
     frequencies: List[float] = Query(...),
     phases: List[float] = Query(...),
 ):
     
-    fs = 4000
+    c0 = medium_manager[medium]
+    fs = 15000
     duration = 10
 
     signal_space, space, signal_time, time, spectrum, freq_vec_fft = get_sine_signal(
-        frequencies, amplitudes, phases, fs, duration
+        frequencies, amplitudes, phases, fs, duration, c0
     )
 
     output = {
