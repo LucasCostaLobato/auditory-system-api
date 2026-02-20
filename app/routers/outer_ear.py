@@ -164,9 +164,9 @@ async def outer_ear_frf(
 ):
     
     input_position = 0
-    output_position = ec_length
+    output_position = ec_length/1000
 
     freq_vec = np.linspace(fi, ff, nf)
-    x_vec = np.linspace(0,(ec_length / 1000),1000)
+    x_vec = np.array([input_position,output_position])
 
     return get_outer_ear_frf(ec_length,input_position,output_position,freq_vec,x_vec,meCondition,meSeverity,level)
